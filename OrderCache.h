@@ -64,3 +64,6 @@ public:
   virtual std::vector<Order> getAllOrders() const = 0;  
 
 };
+
+// Just some function to ensure build correctness
+int foo();
