@@ -1,5 +1,8 @@
 #pragma once
 
+#include <unordered_map>
+#include <unordered_set>
+
 #include <OrderCacheInterface.hpp>
 
 class OrderCache : public OrderCacheInterface {
@@ -14,6 +17,14 @@ public:
             const std::string& securityId) override;
     std::vector<Order> getAllOrders() const override;
 private:
+    // Main storage. Key - orderId
+    std::unordered_map<std::string, Order> m_orders;
+    // Key - user, value - set of orderId
+    std::unordered_map<std::string, std::unordered_set<std::string>>
+        m_userToOrderId;
+    // Key - securityId, value - set of orderId
+    std::unordered_map<std::string, std::unordered_set<std::string>>
+        m_secIdToOrderId;
 };
 
 // Just some function to ensure build correctness
