@@ -1,7 +1,9 @@
 #include <OrderCache.h>
 
 void OrderCache::addOrder(Order order) {
-
+    m_orders.insert({order.orderId(), order});
+    m_userToOrderId[order.user()].insert(order.orderId());
+    m_secIdToOrderId[order.securityId()].insert(order.orderId());
 }
 
 void OrderCache::cancelOrder(const std::string& orderId) {
