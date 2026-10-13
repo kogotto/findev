@@ -23,10 +23,12 @@ void OrderCache::cancelOrdersForUser(const std::string& user) {
         return;
     }
 
-    // It is not const because cancelOrder will modify it
     auto& orderIds = it->second;
-    while (!orderIds.empty()) {
-        cancelOrder(*orderIds.begin());
+    for (const auto& orderId : orderIds) {
+        const auto orderIt = m_orders.find(orderId);
+        const Order& order = orderIt->second;
+        m_secIdToOrderId[order.securityId()].erase(orderId);
+        m_orders.erase(orderIt);
     }
     m_userToOrderId.erase(it);
 }
