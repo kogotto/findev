@@ -18,7 +18,17 @@ void OrderCache::cancelOrder(const std::string& orderId) {
 }
 
 void OrderCache::cancelOrdersForUser(const std::string& user) {
+    const auto it = m_userToOrderId.find(user);
+    if (it == m_userToOrderId.end()) {
+        return;
+    }
 
+    // It is not const because cancelOrder will modify it
+    auto& orderIds = it->second;
+    while (!orderIds.empty()) {
+        cancelOrder(*orderIds.begin());
+    }
+    m_userToOrderId.erase(it);
 }
 
 void OrderCache::cancelOrdersForSecIdWithMinimumQty(
