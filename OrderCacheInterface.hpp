@@ -10,6 +10,8 @@
 class OrderCacheInterface
 {
 public:
+    virtual ~OrderCacheInterface() = default;
+
     // implememnt the 6 methods below, do not alter signatures
 
     // add order to the cache
