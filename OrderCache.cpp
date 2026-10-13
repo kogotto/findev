@@ -7,7 +7,14 @@ void OrderCache::addOrder(Order order) {
 }
 
 void OrderCache::cancelOrder(const std::string& orderId) {
-
+    const auto it = m_orders.find(orderId);
+    if (it == m_orders.end()) {
+        return;
+    }
+    const Order& order = it->second;
+    m_userToOrderId[order.user()].erase(orderId);
+    m_secIdToOrderId[order.securityId()].erase(orderId);
+    m_orders.erase(it);
 }
 
 void OrderCache::cancelOrdersForUser(const std::string& user) {
