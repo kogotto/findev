@@ -17,6 +17,9 @@ public:
             const std::string& securityId) override;
     std::vector<Order> getAllOrders() const override;
 private:
+    void eraseFromUserToOrderId(
+            const std::string& user,
+            const std::string& orderId);
     // Main storage. Key - orderId
     std::unordered_map<std::string, Order> m_orders;
     // Key - user, value - set of orderId

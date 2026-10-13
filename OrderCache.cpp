@@ -12,7 +12,7 @@ void OrderCache::cancelOrder(const std::string& orderId) {
         return;
     }
     const Order& order = it->second;
-    m_userToOrderId[order.user()].erase(orderId);
+    eraseFromUserToOrderId(order.user(), orderId);
     m_secIdToOrderId[order.securityId()].erase(orderId);
     m_orders.erase(it);
 }
@@ -47,7 +47,7 @@ void OrderCache::cancelOrdersForSecIdWithMinimumQty(
         const std::string& orderId = *it;
         const Order& order = m_orders.find(orderId)->second;
         if (order.qty() >= minQty) {
-            m_userToOrderId[order.user()].erase(orderId);
+            eraseFromUserToOrderId(order.user(), orderId);
             m_orders.erase(orderId);
             it = orderIds.erase(it);
         }
@@ -69,6 +69,17 @@ std::vector<Order> OrderCache::getAllOrders() const {
         result.emplace_back(order);
     }
     return result;
+}
+
+void OrderCache::eraseFromUserToOrderId(
+        const std::string& user,
+        const std::string& orderId) {
+    const auto it = m_userToOrderId.find(orderId);
+    auto& orderIds = it->second;
+    orderIds.erase(orderId);
+    if (orderIds.empty()) {
+        m_userToOrderId.erase(it);
+    }
 }
 
 int foo() {
