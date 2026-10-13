@@ -34,7 +34,25 @@ void OrderCache::cancelOrdersForUser(const std::string& user) {
 void OrderCache::cancelOrdersForSecIdWithMinimumQty(
         const std::string& securityId,
         unsigned int minQty) {
+    const auto ordersForSecIdIt = m_secIdToOrderId.find(securityId);
+    if (ordersForSecIdIt == m_secIdToOrderId.end()) {
+        return;
+    }
 
+    auto& orderIds = ordersForSecIdIt->second;
+    const auto ordersIdsEnd = orderIds.end();
+    for (auto it = orderIds.begin(); it != ordersIdsEnd;) {
+        const std::string& orderId = *it;
+        const Order& order = m_orders.find(orderId)->second;
+        if (order.qty() >= minQty) {
+            m_userToOrderId[order.user()].erase(orderId);
+            m_orders.erase(orderId);
+            it = orderIds.erase(it);
+        }
+        else {
+            ++it;
+        }
+    }
 }
 
 unsigned int OrderCache::getMatchingSizeForSecurity(
