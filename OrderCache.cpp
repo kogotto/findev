@@ -26,7 +26,12 @@ unsigned int OrderCache::getMatchingSizeForSecurity(
 }
 
 std::vector<Order> OrderCache::getAllOrders() const {
-    return {};
+    std::vector<Order> result;
+    result.reserve(m_orders.size());
+    for (const auto& [_, order] : m_orders) {
+        result.emplace_back(order);
+    }
+    return result;
 }
 
 int foo() {
