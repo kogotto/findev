@@ -20,6 +20,9 @@ public:
     std::string company() const    { return m_company; }
     unsigned int qty() const       { return m_qty; }
 
+    friend bool operator==(const Order&, const Order&) = default;
+    friend auto operator<=>(const Order&, const Order&) = default;
+
 private:
 
     // use the below to hold the order data
