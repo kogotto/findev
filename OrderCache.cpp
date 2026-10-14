@@ -1,5 +1,31 @@
 #include <OrderCache.h>
 
+#include <algorithm>
+#include <cstdint>
+
+namespace {
+
+struct CompanyQty {
+    uint64_t buy{0};
+    uint64_t sell{0};
+};
+using CompaniesQty = std::unordered_map<std::string, CompanyQty>;
+
+uint64_t getMaxCompanyQty(const CompaniesQty& companiesQty) {
+    uint64_t max = 0;
+    for (const auto& [_, companyQty] : companiesQty) {
+        const uint64_t qty = companyQty.buy + companyQty.sell;
+        if (max < qty) {
+            max = qty;
+        }
+    }
+    return max;
+}
+
+const std::string BUY_SIDE = "Buy";
+
+} // namespace
+
 void OrderCache::addOrder(Order order) {
     m_orders.insert({order.orderId(), order});
     m_userToOrderId[order.user()].insert(order.orderId());
@@ -62,7 +88,36 @@ void OrderCache::cancelOrdersForSecIdWithMinimumQty(
 
 unsigned int OrderCache::getMatchingSizeForSecurity(
         const std::string& securityId) {
-    return 0;
+    const auto ordersForSecIdIt = m_secIdToOrderId.find(securityId);
+    if (ordersForSecIdIt == m_secIdToOrderId.end()) {
+        return 0;
+    }
+
+    CompaniesQty companiesQty;
+    uint64_t totalBuy = 0;
+    uint64_t totalSell = 0;
+
+    for (const auto& orderId : ordersForSecIdIt->second) {
+        const Order& order = m_orders.find(orderId)->second;
+        auto& company = companiesQty[order.company()];
+        if (order.side() == BUY_SIDE) {
+            company.buy += order.qty();
+            totalBuy += order.qty();
+        }
+        else {
+            company.sell += order.qty();
+            totalSell += order.qty();
+        }
+    }
+
+    const uint64_t maxCompanyQty = getMaxCompanyQty(companiesQty);
+    const uint64_t result = std::min({
+        totalBuy,
+        totalSell,
+        totalBuy + totalSell - maxCompanyQty
+    });
+
+    return static_cast<unsigned int>(result);
 }
 
 std::vector<Order> OrderCache::getAllOrders() const {
