@@ -77,7 +77,7 @@ std::vector<Order> OrderCache::getAllOrders() const {
 void OrderCache::eraseFromUserToOrderId(
         const std::string& user,
         const std::string& orderId) {
-    const auto it = m_userToOrderId.find(orderId);
+    const auto it = m_userToOrderId.find(user);
     auto& orderIds = it->second;
     orderIds.erase(orderId);
     if (orderIds.empty()) {
@@ -88,7 +88,7 @@ void OrderCache::eraseFromUserToOrderId(
 void OrderCache::eraseFromSecIdToOrderId(
         const std::string& securityId,
         const std::string& orderId) {
-    const auto it = m_secIdToOrderId.find(orderId);
+    const auto it = m_secIdToOrderId.find(securityId);
     auto& orderIds = it->second;
     orderIds.erase(orderId);
     if (orderIds.empty()) {
