@@ -20,6 +20,9 @@ private:
     void eraseFromUserToOrderId(
             const std::string& user,
             const std::string& orderId);
+    void eraseFromSecIdToOrderId(
+            const std::string& securityId,
+            const std::string& orderId);
     // Main storage. Key - orderId
     std::unordered_map<std::string, Order> m_orders;
     // Key - user, value - set of orderId

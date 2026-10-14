@@ -13,7 +13,7 @@ void OrderCache::cancelOrder(const std::string& orderId) {
     }
     const Order& order = it->second;
     eraseFromUserToOrderId(order.user(), orderId);
-    m_secIdToOrderId[order.securityId()].erase(orderId);
+    eraseFromSecIdToOrderId(order.securityId(), orderId);
     m_orders.erase(it);
 }
 
@@ -27,7 +27,7 @@ void OrderCache::cancelOrdersForUser(const std::string& user) {
     for (const auto& orderId : orderIds) {
         const auto orderIt = m_orders.find(orderId);
         const Order& order = orderIt->second;
-        m_secIdToOrderId[order.securityId()].erase(orderId);
+        eraseFromSecIdToOrderId(order.securityId(), orderId);
         m_orders.erase(orderIt);
     }
     m_userToOrderId.erase(it);
@@ -55,6 +55,9 @@ void OrderCache::cancelOrdersForSecIdWithMinimumQty(
             ++it;
         }
     }
+    if (orderIds.empty()) {
+        m_secIdToOrderId.erase(ordersForSecIdIt);
+    }
 }
 
 unsigned int OrderCache::getMatchingSizeForSecurity(
@@ -79,6 +82,17 @@ void OrderCache::eraseFromUserToOrderId(
     orderIds.erase(orderId);
     if (orderIds.empty()) {
         m_userToOrderId.erase(it);
+    }
+}
+
+void OrderCache::eraseFromSecIdToOrderId(
+        const std::string& securityId,
+        const std::string& orderId) {
+    const auto it = m_secIdToOrderId.find(orderId);
+    auto& orderIds = it->second;
+    orderIds.erase(orderId);
+    if (orderIds.empty()) {
+        m_secIdToOrderId.erase(it);
     }
 }
 
