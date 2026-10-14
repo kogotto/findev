@@ -16,10 +16,6 @@ bool sameOrders(const Orders& lhs, const Orders& rhs) {
     return toSet(lhs) == toSet(rhs);
 }
 
-TEST(OrderCache, foo) {
-    ASSERT_EQ(foo(), 666);
-}
-
 TEST(OrderCache, addOrder) {
     OrderCache cache;
     ASSERT_EQ(cache.getAllOrders().size(), 0);

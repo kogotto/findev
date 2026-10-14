@@ -95,7 +95,3 @@ void OrderCache::eraseFromSecIdToOrderId(
         m_secIdToOrderId.erase(it);
     }
 }
-
-int foo() {
-    return 666;
-}

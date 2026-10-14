@@ -32,6 +32,3 @@ private:
     std::unordered_map<std::string, std::unordered_set<std::string>>
         m_secIdToOrderId;
 };
-
-// Just some function to ensure build correctness
-int foo();
